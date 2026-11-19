@@ -1,0 +1,355 @@
+{
+  "224": {
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Text Encoder UMT5 fp8"
+    }
+  },
+  "225": {
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "VAE Wan 2.1"
+    }
+  },
+  "226": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "MODEL HIGH noise I2V 14B fp8"
+    }
+  },
+  "282": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "MODEL LOW noise I2V 14B fp8"
+    }
+  },
+  "343": {
+    "inputs": {
+      "lora_name": "i2v_lightx2v_high_noise_model.safetensors",
+      "strength_model": 1,
+      "model": [
+        "226",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Lightning LoRA HIGH (bat buoc)"
+    }
+  },
+  "342": {
+    "inputs": {
+      "lora_name": "i2v_lightx2v_low_noise_model.safetensors",
+      "strength_model": 1,
+      "model": [
+        "282",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Lightning LoRA LOW (bat buoc)"
+    }
+  },
+  "255": {
+    "inputs": {
+      "shift": 5,
+      "model": [
+        "343",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "Shift HIGH = 5"
+    }
+  },
+  "292": {
+    "inputs": {
+      "shift": 5,
+      "model": [
+        "342",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "Shift LOW = 5"
+    }
+  },
+  "359": {
+    "inputs": {
+      "image": "input.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "ANH DAU VAO (tu dong crop giua theo kich thuoc ben duoi)"
+    }
+  },
+  "227": {
+    "inputs": {
+      "text": "[Hanh dong + chuyen dong camera]. Keep identity, clothing, product design, geometry and background consistent with the input image; smooth temporal continuity, realistic motion, sharp details, continuous single shot.",
+      "clip": [
+        "224",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "PROMPT duong (mo ta CHUYEN DONG, khong ta lai anh)"
+    }
+  },
+  "228": {
+    "inputs": {
+      "text": "deformed hands, extra fingers, fused fingers, distorted anatomy, identity drift, changing clothes, duplicate subjects, warped objects, floating parts, jitter, flicker, temporal inconsistency, melting objects, excessive motion blur, sudden zoom, jump cut, plastic skin, low resolution, artifacts, watermark, logo, gibberish text, subtitles, oversaturated colors",
+      "clip": [
+        "224",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Prompt am (cfg=1 nen gan nhu khong tac dung)"
+    }
+  },
+  "358": {
+    "inputs": {
+      "conditioning": [
+        "228",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Zero negative (cfg 1)"
+    }
+  },
+  "357": {
+    "inputs": {
+      "width": 480,
+      "height": 832,
+      "length": 81,
+      "batch_size": 1,
+      "positive": [
+        "227",
+        0
+      ],
+      "negative": [
+        "358",
+        0
+      ],
+      "vae": [
+        "225",
+        0
+      ],
+      "start_image": [
+        "359",
+        0
+      ]
+    },
+    "class_type": "WanImageToVideo",
+    "_meta": {
+      "title": "KICH THUOC: 3060 = 480x832 doc / 832x480 ngang; 720x1280 neu GPU >=16GB"
+    }
+  },
+  "355": {
+    "inputs": {
+      "add_noise": "enable",
+      "noise_seed": 1122634416662646,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 0,
+      "end_at_step": 3,
+      "return_with_leftover_noise": "enable",
+      "model": [
+        "255",
+        0
+      ],
+      "positive": [
+        "357",
+        0
+      ],
+      "negative": [
+        "357",
+        1
+      ],
+      "latent_image": [
+        "357",
+        2
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "Sampler HIGH - step 0-3 / 6"
+    }
+  },
+  "356": {
+    "inputs": {
+      "add_noise": "disable",
+      "noise_seed": 1122634416662646,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 3,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable",
+      "model": [
+        "292",
+        0
+      ],
+      "positive": [
+        "357",
+        0
+      ],
+      "negative": [
+        "357",
+        1
+      ],
+      "latent_image": [
+        "355",
+        0
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "Sampler LOW - step 3-6 / 6"
+    }
+  },
+  "269": {
+    "inputs": {
+      "samples": [
+        "356",
+        0
+      ],
+      "vae": [
+        "225",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "365": {
+    "inputs": {
+      "model_name": "RealESRGAN_x2plus.pth"
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Upscale model ESRGAN x2"
+    }
+  },
+  "364": {
+    "inputs": {
+      "upscale_model": [
+        "365",
+        0
+      ],
+      "image": [
+        "269",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "Upscale x2"
+    }
+  },
+  "366": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "scale_by": 1.125,
+      "image": [
+        "364",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "Ve 1080p: goc 480p -> 1.125 | goc 720p -> 0.75"
+    }
+  },
+  "367": {
+    "inputs": {
+      "sharpen_radius": 1,
+      "sigma": 0.5,
+      "alpha": 0.3,
+      "image": [
+        "366",
+        0
+      ]
+    },
+    "class_type": "ImageSharpen",
+    "_meta": {
+      "title": "Sharpen nhe"
+    }
+  },
+  "361": {
+    "inputs": {
+      "model_name": "rife426.pth"
+    },
+    "class_type": "FrameInterpolationModelLoader",
+    "_meta": {
+      "title": "RIFE 4.26"
+    }
+  },
+  "362": {
+    "inputs": {
+      "multiplier": 2,
+      "interp_model": [
+        "361",
+        0
+      ],
+      "images": [
+        "367",
+        0
+      ]
+    },
+    "class_type": "FrameInterpolate",
+    "_meta": {
+      "title": "Noi frame x2 (16 -> 32fps)"
+    }
+  },
+  "363": {
+    "inputs": {
+      "frame_rate": 32,
+      "loop_count": 0,
+      "filename_prefix": "Wan22_I2V/final_1080p_32fps",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 16,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "362",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "LUU video FINAL 1080p 32fps"
+    }
+  }
+}

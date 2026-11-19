@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/runpod-volume/models/clip/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "node": "224"
+  },
+  {
+    "path": "/runpod-volume/models/vae/wan_2.1_vae.safetensors",
+    "node": "225"
+  },
+  {
+    "path": "/runpod-volume/models/unet/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+    "node": "226"
+  },
+  {
+    "path": "/runpod-volume/models/unet/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+    "node": "282"
+  },
+  {
+    "path": "/runpod-volume/models/loras/i2v_lightx2v_high_noise_model.safetensors",
+    "node": "343"
+  },
+  {
+    "path": "/runpod-volume/models/loras/i2v_lightx2v_low_noise_model.safetensors",
+    "node": "342"
+  },
+  {
+    "path": "/runpod-volume/models/upscale_models/RealESRGAN_x2plus.pth",
+    "node": "365"
+  },
+  {
+    "path": "/runpod-volume/models/frame_interpolation/rife426.pth",
+    "node": "361"
+  }
+]
